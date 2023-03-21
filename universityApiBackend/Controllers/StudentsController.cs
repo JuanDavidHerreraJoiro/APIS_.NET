@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using universityApiBackend.DataAccess;
 using universityApiBackend.Models.DataModels;
+using universityApiBackend.Services;
 
 namespace universityApiBackend.Controllers
 {
@@ -16,9 +17,14 @@ namespace universityApiBackend.Controllers
     {
         private readonly UniversityDBContext _context;
 
-        public StudentsController(UniversityDBContext context)
+        //Services
+        //private readonly IStudentsServices _studentsServices;
+        private readonly IServices _services;
+
+        public StudentsController(UniversityDBContext context, IServices services)
         {
             _context = context;
+            _services = services;
         }
 
         // GET: api/Students
@@ -103,6 +109,34 @@ namespace universityApiBackend.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.Id == id);
+        }
+
+        //Nuevos metodos
+
+        [HttpGet("adultStudents")]
+        public ActionResult<IEnumerable<Student>> GetAdultStudents()
+        {
+            var adultStudentslList = _services.GetAdultStudents().ToList();
+
+            if (adultStudentslList == null)
+            {
+                return NotFound();
+            }
+
+            return adultStudentslList;
+        }
+
+        [HttpGet("studentsWithAtLeastOneCourse")]
+        public ActionResult<IEnumerable<Student>> GetStudentsWithAtLeastOneCourse()
+        {
+            var studentsWithAtLeastOneCourselList = _services.GetStudentsWithAtLeastOneCourse().ToList();
+
+            if (studentsWithAtLeastOneCourselList == null)
+            {
+                return NotFound();
+            }
+
+            return studentsWithAtLeastOneCourselList;
         }
     }
 }

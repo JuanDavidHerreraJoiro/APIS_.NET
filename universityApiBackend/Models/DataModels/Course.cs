@@ -29,7 +29,7 @@ namespace universityApiBackend.Models.DataModels
 
         public ICollection<Category> Categories { get; set; } = new List<Category>();
 
-        public Chapters Chapters { get; set; } = new Chapters(); 
+        public Chapters Chapters { get; set; } //= new Chapters(); 
 
         public ICollection<Student> Students { get; set; } = new List<Student>();
 

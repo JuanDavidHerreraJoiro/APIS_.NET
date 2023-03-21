@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using universityApiBackend.DataAccess;
 using universityApiBackend.Models.DataModels;
+using universityApiBackend.Services;
 
 namespace universityApiBackend.Controllers
 {
@@ -16,16 +17,21 @@ namespace universityApiBackend.Controllers
     {
         private readonly UniversityDBContext _context;
 
-        public CoursesController(UniversityDBContext context)
+        //Services
+        //private readonly ICoursesServices _coursesServices;
+        private readonly IServices _services;
+
+        public CoursesController(UniversityDBContext context, IServices services)
         {
             _context = context;
+            _services = services;
         }
 
         // GET: api/Courses
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
         {
-            return await _context.Courses.ToListAsync();
+            return await _context.Courses.Include(c => c.Chapters).ToListAsync();
         }
 
         // GET: api/Courses/5
@@ -103,6 +109,50 @@ namespace universityApiBackend.Controllers
         private bool CourseExists(int id)
         {
             return _context.Courses.Any(e => e.Id == id);
+        }
+
+        //Nuevos metodos
+
+        [HttpGet("coursesForLevelWithStudents/{level}")]
+        public ActionResult<IEnumerable<Course>> GetCoursesForLevelWithStudents(Level level)
+        {
+            var coursesForLevelWithStudentslList = _services.GetCoursesForLevelWithStudents(level).ToList();
+
+            if (coursesForLevelWithStudentslList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesForLevelWithStudentslList;
+        }
+
+        [HttpGet("coursesForLevelInCategory/{level}/{idCategory}")]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCoursesForLevelInCategory(Level level, int idCategory)
+        {
+
+            var category = await _context.Categories.FindAsync(idCategory);
+
+            var coursesForLevelInCategorylList = _services.GetCoursesForLevelInCategory(level, category).ToList();
+
+            if (coursesForLevelInCategorylList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesForLevelInCategorylList;
+        }
+
+        [HttpGet("coursesWithoutStudents")]
+        public ActionResult<IEnumerable<Course>> GetCoursesWithoutStudents()
+        {
+            var coursesWithoutStudentslList = _services.GetCoursesWithoutStudents().ToList();
+
+            if (coursesWithoutStudentslList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesWithoutStudentslList;
         }
     }
 }

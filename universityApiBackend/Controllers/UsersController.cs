@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using universityApiBackend.DataAccess;
 using universityApiBackend.Models.DataModels;
+using universityApiBackend.Services;
 
 namespace universityApiBackend.Controllers
 {
@@ -16,9 +17,14 @@ namespace universityApiBackend.Controllers
     {
         private readonly UniversityDBContext _context;
 
-        public UsersController(UniversityDBContext context)
+        //Services
+        //private readonly IUsersServices _usersServices;
+        private readonly IServices _services;
+
+        public UsersController(UniversityDBContext context, IServices services)
         {
             _context = context;
+            _services = services;
         }
 
         // GET: api/Users
@@ -102,5 +108,23 @@ namespace universityApiBackend.Controllers
         {
             return _context.Users.Any(user => user.Id == id);
         }
+
+        //Nuevos metodos
+
+        //[HttpGet("{email}")]
+        [HttpGet("email/{email}")]
+        public ActionResult<IEnumerable<User>> GetUserWithEmail(string email)
+        //ActionResult<IEnumerable<User>> GetUserWithEmail(string email)
+        {
+            var emailList = _services.GetUserByEmail(email).ToList();
+
+            if (emailList == null)
+            {
+                return NotFound();
+            }
+
+            return emailList;
+        }
+
     }
 }
