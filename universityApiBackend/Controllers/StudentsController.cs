@@ -19,9 +19,9 @@ namespace universityApiBackend.Controllers
 
         //Services
         //private readonly IStudentsServices _studentsServices;
-        private readonly IServices _services;
+        private readonly IStudentsServices _services;
 
-        public StudentsController(UniversityDBContext context, IServices services)
+        public StudentsController(UniversityDBContext context, IStudentsServices services)
         {
             _context = context;
             _services = services;
@@ -137,6 +137,35 @@ namespace universityApiBackend.Controllers
             }
 
             return studentsWithAtLeastOneCourselList;
+        }
+
+        //Obtener todos los alumnos que no tienen cursos asociados
+        [HttpGet("studentsWithAtCourseNullList")]
+        public ActionResult<IEnumerable<Student>> GetStudentsWithAtCourseNull()
+        {
+            var studentsWithAtCourseNullList = _services.GetStudentsWithAtCourseNull().ToList();
+
+            if (studentsWithAtCourseNullList == null)
+            {
+                return NotFound();
+            }
+
+            return studentsWithAtCourseNullList;
+        }
+
+        [HttpGet("studentsByCourselList/{idCurso}")]
+        public async Task<ActionResult<IEnumerable<Student>>> GetStudentsByCourse(int idCurso)
+        {
+            var curso = await _context.Courses.FindAsync(idCurso);
+
+            var studentsByCourseslList = _services.GetStudentsByCourse(curso).ToList();
+
+            if (studentsByCourseslList == null)
+            {
+                return NotFound();
+            }
+
+            return studentsByCourseslList;
         }
     }
 }

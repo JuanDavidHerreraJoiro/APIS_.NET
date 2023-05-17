@@ -19,9 +19,9 @@ namespace universityApiBackend.Controllers
 
         //Services
         //private readonly IUsersServices _usersServices;
-        private readonly IServices _services;
+        private readonly IUsersServices _services;
 
-        public UsersController(UniversityDBContext context, IServices services)
+        public UsersController(UniversityDBContext context, IUsersServices services)
         {
             _context = context;
             _services = services;

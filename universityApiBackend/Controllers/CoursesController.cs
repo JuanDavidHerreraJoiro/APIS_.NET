@@ -19,9 +19,9 @@ namespace universityApiBackend.Controllers
 
         //Services
         //private readonly ICoursesServices _coursesServices;
-        private readonly IServices _services;
+        private readonly ICoursesServices _services;
 
-        public CoursesController(UniversityDBContext context, IServices services)
+        public CoursesController(UniversityDBContext context, ICoursesServices services)
         {
             _context = context;
             _services = services;
@@ -154,5 +154,50 @@ namespace universityApiBackend.Controllers
 
             return coursesWithoutStudentslList;
         }
+
+        [HttpGet("coursesByCategory/{idCategory}")]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCoursesByCategory(int idCategory)
+        {
+
+            var category = await _context.Categories.FindAsync(idCategory);
+
+            var coursesByCategoryList = _services.GetCoursesByCategory(category).ToList();
+
+            if (coursesByCategoryList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesByCategoryList;
+        }
+
+        [HttpGet("coursesWithAtChaptersNull")]
+        public ActionResult<IEnumerable<Course>> GetCoursesWithAtChaptersNull()
+        {
+            var coursesWithAtChaptersNullList = _services.GetCoursesWithAtChaptersNull().ToList();
+
+            if (coursesWithAtChaptersNullList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesWithAtChaptersNullList;
+        }
+
+        [HttpGet("coursesByStudentList/{idStudent}")]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCoursesByStudentlList(int idStudent)
+        {
+            var student = await _context.Students.FindAsync(idStudent);
+
+            var coursesByStudentList = _services.GetCoursesByStudent(student).ToList();
+
+            if (coursesByStudentList == null)
+            {
+                return NotFound();
+            }
+
+            return coursesByStudentList;
+        }
+
     }
 }

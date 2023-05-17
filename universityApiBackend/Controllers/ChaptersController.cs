@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using universityApiBackend.DataAccess;
 using universityApiBackend.Models.DataModels;
+using universityApiBackend.Services;
+using universityApiBackend.Services.Interfaces;
 
 namespace universityApiBackend.Controllers
 {
@@ -15,10 +17,12 @@ namespace universityApiBackend.Controllers
     public class ChaptersController : ControllerBase
     {
         private readonly UniversityDBContext _context;
+        private readonly IChaptersServices _services;
 
-        public ChaptersController(UniversityDBContext context)
+        public ChaptersController(UniversityDBContext context, IChaptersServices services)
         {
             _context = context;
+            _services = services;
         }
 
         // GET: api/Chapters
@@ -100,6 +104,28 @@ namespace universityApiBackend.Controllers
             return NoContent();
         }
 
+        [HttpGet("chaptersByCourses/{idCurso}")]
+        public async Task<ActionResult<IEnumerable<Chapters>>> GetChaptersByCourses(int idCurso)
+        {
+
+            var curso = await _context.Courses.FindAsync(idCurso);
+
+            if (curso == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var chaptersByCoursesList = _services.GetChaptersByCourses(curso).ToList();
+
+                if (chaptersByCoursesList == null)
+                {
+                    return NotFound();
+                }
+
+                return chaptersByCoursesList;
+            }
+        }
         private bool ChaptersExists(int id)
         {
             return _context.Chapters.Any(e => e.Id == id);

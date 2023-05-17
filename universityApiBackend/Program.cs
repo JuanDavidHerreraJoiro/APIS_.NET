@@ -20,6 +20,7 @@ builder.Services.AddControllers();
 
 //4. Add Services
 builder.Services.AddScoped<IServices, Services>();
+builder.Services.AddScoped<ICoursesServices, CoursesServices>();
 //Todo:
 
 
